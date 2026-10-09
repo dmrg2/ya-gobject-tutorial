@@ -45,14 +45,13 @@ Tutorial code is divided to independed sections under src directory. No preparat
 Given current directory is root of repository, you should go to section directory and do make:
 
 ```bash
-cd src/tut-01
+cd src/gobj-01
 make
 ```
 Makefile in each section produces single executable "main". Run it in current directory a usual:
 
 ```bash
 ./main
-make
 ```
 
 ## Contributing
