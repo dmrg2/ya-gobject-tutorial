@@ -60,7 +60,7 @@ Feel free to post an issue. If you found an error in source and have fix for it,
 
 ## Table of contents
 
-1. GObject itself, creation of GObject and descendants, information on instances and its classes.
+1. [GObject itself, creation of GObject and descendants, information on instances and its classes.](doc/gobj-01.md)
 2. Create and run your first object.
 3. Object with internal data, creatiion and deletion, freeing allocated memory.
 4. Object inheritance, virtual methods, using GObject library convenience macros.
@@ -75,11 +75,11 @@ Feel free to post an issue. If you found an error in source and have fix for it,
 
 Other good tutorials:
 
-["Official" GObject tutorial](https://docs.gtk.org/gobject/tutorial.html)
+["Official" GObject tutorial](https://docs.gtk.org/gobject/tutorial.html)\
 [ToshioCP/Gobject-tutorial](https://github.com/ToshioCP/Gobject-tutorial)
 
 API references and official documenation:
 
-[GLib-2.0 documentation](https://docs.gtk.org/glib/)
-[GObject-2.0 documentation](https://docs.gtk.org/gobject/)
+[GLib-2.0 documentation](https://docs.gtk.org/glib/)\
+[GObject-2.0 documentation](https://docs.gtk.org/gobject/)\
 [GModule-2.0 documentation](https://docs.gtk.org/gmodule/) -- about dynamic loading of objects.
