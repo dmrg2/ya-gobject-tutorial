@@ -61,7 +61,7 @@ Feel free to post an issue. If you found an error in source and have fix for it,
 ## Table of contents
 
 1. [GObject itself, creation of GObject and descendants, information on instances and its classes.](doc/gobj-01.md)
-2. Create and run your first object.
+2. [Create and run your first object.](doc/gobj-02.md)
 3. Object with internal data, creatiion and deletion, freeing allocated memory.
 4. Object inheritance, virtual methods, using GObject library convenience macros.
 5. Object properties and interface to access them.
