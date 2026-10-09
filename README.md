@@ -25,11 +25,35 @@ To compile and change programs from this tutorial you will need:
 
 ## Getting source code
 
-(placeholder)
+Clone repository to local folder:
+
+```bash
+git clone https://github.com/dmrg2/ya-gobject-tutorial.git
+```
+
+Or [download zip](https://github.com/dmrg2/ya-gobject-tutorial/archive/refs/heads/main.zip) and unpack it.
+
+Both ways give you folder named after repository: ya-gobject-tutorial. Source code is inside that folder.
+
+```bash
+cd ya-gobject-tutorial
+```
 
 ## Building and running
 
-(placeholder)
+Tutorial code is divided to independed sections under src directory. No preparation or configuration needed.
+Given current directory is root of repository, you should go to section directory and do make:
+
+```bash
+cd src/tut-01
+make
+```
+Makefile in each section produces single executable "main". Run it in current directory a usual:
+
+```bash
+./main
+make
+```
 
 ## Contributing
 
