@@ -48,7 +48,7 @@ Given current directory is root of repository, you should go to section director
 cd src/gobj-01
 make
 ```
-Makefile in each section produces single executable "main". Run it in current directory a usual:
+Makefile in each section produces single executable "main". Run it in current directory as usual:
 
 ```bash
 ./main
@@ -56,12 +56,30 @@ Makefile in each section produces single executable "main". Run it in current di
 
 ## Contributing
 
-(placeholder)
+Feel free to post an issue. If you found an error in source and have fix for it, post pull-request.
 
 ## Table of contents
 
-(placeholder)
+1. GObject itself, creation of GObject and descendants, information on instances and its classes.
+2. Create and run your first object.
+3. Object with internal data, creatiion and deletion, freeing allocated memory.
+4. Object inheritance, virtual methods, using GObject library convenience macros.
+5. Object properties and interface to access them.
+6. Using GObject 'notify' [of property change] signal.
+7. Implementing custom signal on object, passing parameters wit signal.
+8. Interfaces, interface inheritance, implementing interfaces in object.
+9. Creating new fundamental type, passing its value between parts of code.
+10. Using boxed types, enumeration types, flag types, more convenience macros.
 
 ## Other useful information sources
 
-(placeholder)
+Other good tutorials:
+
+["Official" GObject tutorial](https://docs.gtk.org/gobject/tutorial.html)
+[ToshioCP/Gobject-tutorial](https://github.com/ToshioCP/Gobject-tutorial)
+
+API references and official documenation:
+
+[GLib-2.0 documentation](https://docs.gtk.org/glib/)
+[GObject-2.0 documentation](https://docs.gtk.org/gobject/)
+[GModule-2.0 documentation](https://docs.gtk.org/gmodule/) -- about dynamic loading of objects.
