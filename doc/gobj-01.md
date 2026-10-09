@@ -1,6 +1,6 @@
 ## GObject itself, creation of GObject and descendants, information on instances and its classes
 
-Source code for this chapter is in <../src/gobj-01/> directory.
+Source code for this chapter is in [/src/gobj-01/](../src/gobj-01/) directory.
 
 ### GObject itself
 
