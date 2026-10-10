@@ -56,7 +56,7 @@ to class structure of parent class too. The same with instance structure, having
 'parent_instance'. This property of both structures defined that way is actually used by
 library.
 
-<a name="memory-structure-and-init" />
+<a name="memory-structure-and-init"></a>
 Consider following memory layout for simple system of objects, derived objects and "derived from
 derived objects":
 
