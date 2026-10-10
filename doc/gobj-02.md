@@ -56,6 +56,43 @@ to class structure of parent class too. The same with instance structure, having
 'parent_instance'. This property of both structures defined that way is actually used by
 library.
 
+<a name="memory-structure-and-init" />
+Consider following memory layout for simple system of objects, derived objects and "derived from
+derived objects":
+
+![Instances and class structures in memory](static/instances-classes.png)
+
+Consider library maintans a following table of types somewhere inside:
+
+![Internal table of types](static/type-table.png)
+
+Any pointer to any of the instances is a pointer to GObject instance, located at the beginning
+of instances's memory block. First field in GObject instance is a pointer to *some* class
+structure. So, the library can find "details of class implementation" for any instance, given
+the pointer to that instance. Particularly, for any registered type library knows memory sizes
+of instance and class structures, and allocates memory blocks of appropriate size.
+
+Similar, any pointer to a class structure is a pointer to GObjectClass structure, located at
+the beginning of class structure's memory block. First field of GObjectClass structure is a
+type identifier. So, the library can find detailed type description for any instances of
+*some* class.
+
+Why *some*? Part of class and instance initialization is made inside the library. When memory
+structure of derived class is created, library automatically copies the contents of parent's
+class structure to a beginning of derived's class structure. Then, value of type identifier
+field `g_type` is automatically *replaced* by value of a derived class type.
+
+Similar, when memory structure of derived class' instance is created, library automatically
+fills the contents of a parent class' instance, embedded into derived class' instance. Parent
+class structure holds pinters to special `xxx_init ()` functions for that. Value of pointer
+to class structure `pc` is automatically changed to pointer to derived class structure.
+
+After that, library calls corresponding `xxx_init ()` functions, provided by derived class
+implementation. These functions may make necessary changes in (already partially initialized)
+memory structures.
+
+That is how instantiation of class and object of a class made.
+
 ### API definitions for object type
 
 There are three functions:
@@ -131,8 +168,9 @@ our `tut_obj02_get_type ()` function and reused in next calls.
 
 Our object does not contain any data, have no differences from GObject in class data, so
 initialization functions are effectively empty. When allocating memory for class structure
-and instance, library automatically fills its "standard" members, located at beginning. Library
-already knows about parent type, and how to initialize its class structure and instances.
+and instance, library automatically filled its "standard" members, located at beginning. Library
+already knows about parent type, and how to initialize its class structure and instances, as
+described [above](#memory-structure-and-init).
 
 ```C
 static void
