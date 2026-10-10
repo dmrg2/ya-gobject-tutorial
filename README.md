@@ -60,16 +60,16 @@ Feel free to post an issue. If you found an error in source and have fix for it,
 
 ## Table of contents
 
-1. [GObject itself, creation of GObject and descendants, information on instances and its classes.](doc/gobj-01.md)
-2. [Create and run your first object.](doc/gobj-02.md)
-3. Object with internal data, creatiion and deletion, freeing allocated memory.
-4. Object inheritance, virtual methods, using GObject library convenience macros.
-5. Object properties and interface to access them.
-6. Using GObject 'notify' [of property change] signal.
-7. Implementing custom signal on object, passing parameters wit signal.
-8. Interfaces, interface inheritance, implementing interfaces in object.
-9. Creating new fundamental type, passing its value between parts of code.
-10. Using boxed types, enumeration types, flag types, more convenience macros.
+1. [GObject itself, creation of GObject and descendants, information on instances and its classes](doc/gobj-01.md)
+2. [Create and run your first object](doc/gobj-02.md)
+3. [Object with internal data, creation and deletion, freeing allocated memory](doc/gobj-03.md)
+4. [Object inheritance, virtual methods, using GObject library convenience macros](doc/gobj-04.md)
+5. Object properties and interface to access them
+6. Using GObject 'notify' [of property change] signal
+7. Implementing custom signal on object, passing parameters wit signal
+8. Interfaces, interface inheritance, implementing interfaces in object
+9. Creating new fundamental type, passing its value between parts of code
+10. Using boxed types, enumeration types, flag types, more convenience macros
 
 ## Other useful information sources
 

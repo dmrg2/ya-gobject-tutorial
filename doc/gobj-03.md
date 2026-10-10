@@ -4,7 +4,7 @@ Source code for this chapter is in [/src/gobj-03/](../src/gobj-03/) directory.
 
 ### Names and standard definitions
 
-All names and structure definitions are [conventional](gobj-2.md#conventional-module-and-object-names).
+All names and structure definitions are [conventional](gobj-02.md#conventional-module-and-object-names).
 
 In this chapter we define much more C symbols. This symbols mimic the definitions that
 are produced automatically, when we use conenience macros like G_DECLARE_xxx (). The use
@@ -126,6 +126,8 @@ the library and to the methods of object. User code will never know neither loca
 nor structure of instance's private data. Data is "incapsulated".
 
 ```C
+* BEGIN IMPL */
+
 /* Custom defined instance structure */
 struct _TutObj03 {
     GObject parent_instance; /* head of structure is GObject as is */
