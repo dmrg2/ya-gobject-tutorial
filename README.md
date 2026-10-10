@@ -64,7 +64,7 @@ Feel free to post an issue. If you found an error in source and have fix for it,
 2. [Create and run your first object](doc/gobj-02.md)
 3. [Object with internal data, creation and deletion, freeing allocated memory](doc/gobj-03.md)
 4. [Object inheritance, virtual methods, using GObject library convenience macros](doc/gobj-04.md)
-5. Object properties and interface to access them
+5. [Object properties and interface to access them](doc/gobj-05.md)
 6. Using GObject 'notify' (of property change) signal
 7. Implementing custom signal on object, passing parameters with signal
 8. Interfaces, interface inheritance, implementing interfaces in object
