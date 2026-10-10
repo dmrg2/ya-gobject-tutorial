@@ -45,9 +45,9 @@ These instances will take 3*sizeof(pointer) memory each.
 There are many interfaces to create, destroy and manipulate GObject instances in the library. These
 interfaces implemented as plain old C functions. One of the formal arguments of such functions
 is a pointer to GObject instance (except object creation functions: they *return* a pointer to GObject).
-This GObject * argument looks like this pointer in C++. Actually it *is* almost perfect equivalent to.
+This GObject * argument looks like `this` pointer in C++. Actually it *is* almost perfect equivalent to.
 
-Suppose C++ method function:
+Suppose C++ method:
 
 ```C++
 GObject * GOBject::ref () {
@@ -57,6 +57,7 @@ GObject * GOBject::ref () {
 ```
 
 The same does GObject library C function:
+
 ```C
 GObject * g_object_ref (GObject * self) {
         self->ref_count++;
@@ -64,7 +65,7 @@ GObject * g_object_ref (GObject * self) {
 }
 ```
 
-The difference is in explicit self argument only.
+The difference is in explicit `self` argument only.
 
 Beside GObject "methods" there are other interfaces to manupulate object class information, register
 new classes of objects and so on. One of the basic concepts in library is concept of GType. GType
@@ -94,9 +95,9 @@ Second argument of function [g_object_new()](https://docs.gtk.org/gobject/ctor.O
 Look at the name of function g_object_new(). It consists of three parts, separated by underscores.
 This is intentional: the naming convention states that its full name should be combination of
 
-- short module name ("g" in this case)
-- type name ("object" it this case)
-- and specific function or method name ("new" in this case)
+- short module name (`g` in this case)
+- type name (`object` it this case)
+- and specific function or method name (`new` in this case)
 
 Many convenience macros that automating code generations use this scheme of naming, thus force your
 program to adhere to.
@@ -155,8 +156,8 @@ typedef struct _GTypeInstance
   GTypeClass *g_class;
 } GTypeInstance;
 ```
-Memory layout of GTypeInstance exatly mathes memory layout of beginning of any GObject. Library uses 
-such pointers (GTypeInstance *) to type formal arguments of several APIs. Here, in line
+Memory layout of GTypeInstance exactly mathes memory layout of beginning of any GObject. Library uses 
+such pointers (GTypeInstance *) to type formal arguments of several APIs. For example, in line
 `gtype = G_TYPE_FROM_INSTANCE (type_instance);` we fetching type identifier for object pointed by
 instance with corresponding macro. Another way is to use ready macro G_OBJECT_TYPE, accepting
 any pointer: `quick_type = G_OBJECT_TYPE (instance);`. We can even fetch the type identifier by the
@@ -169,9 +170,9 @@ same, program will report it later:
     g_print ("type_from_name (***)                  = 0x%lX\n", named_type);
 ```
 
-More than that, they are same as formal argument 'type' passed to our function.
+More than that, they are same as formal argument 'type' passed to our `reate_and_report ()` function.
 
-Next, we can get a reference to class structure:
+We can get a reference to class structure:
 
 ```C
 void
@@ -189,7 +190,7 @@ create_and_report (GType type) {
 }
 ```
 
-Some specific APIs in library use class structure to get detailed information describing instances
+Some specific APIs in library use class structures to get detailed information describing instances
 of that class.
 
 Gnerally, we should prefer common-use public interfaces based on GType:
@@ -234,7 +235,7 @@ Note that `g_free (children);` and `g_free (interfaces);`. Some APIs allocating 
 results, then *transfer ownership* of allocated memory to caller. In such case, it is a caller responsibility to
 free allocated memory blocks after use. Such aspect API behavior is documented in [GObject reference](https://docs.gtk.org/gobject/).
 
-### Type identifier macro and auto-registration of types
+### Type identifier macro and autoregistration of types
 
 Main function of example program [src/gobj-01/main.c](../src/gobj-01/main.c) calls reporting function
 for several types from GObject and GLib libraries:
@@ -256,13 +257,13 @@ main (void)
 ```
 
 Look at last, "duplicate" report for GObject type. It differs from first: class GObject have got children (derived
-classes). This is because of type autoregistration, hidden in macros G_TYPE_xxx. Look at some of them:
+classes). This is because of type autoregistration, hidden in macros G_TYPE_xxx. Look at one of them:
 
 ```C
 #define G_TYPE_APPLICATION (g_application_get_type ())
 ```
 
 `G_TYPE_APPLICATION` expands to function call. Function `g_application_get_type ()` (again, note structure of its
-name) *registers* new type for GApplication in library type system. Since GObject base type for GApplication,
+name) *registers* new type for GApplication in library type system. Since GObject is base type for GApplication,
 class GObject gets new subclass at this moment. The registration of a type is one-time operation, functions like
-g_xxx_get_type() cache registered type identifier and return cached value on subsequent calls.
+`xx_yyy_get_type ()` cache registered type identifier and return cached value on subsequent calls.

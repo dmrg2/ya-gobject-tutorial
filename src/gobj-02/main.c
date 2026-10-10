@@ -109,7 +109,7 @@ main (void)
     g_print ("\tinstance_size = %u\n", tq.instance_size);
 
     /* use public interface to our object */
-    tut_obj02_whoami(obj);
+    tut_obj02_whoami (obj);
 
     /* delete our object */
     g_print ("before unref: obj->ref_count = %d\n", G_OBJECT (obj)->ref_count);

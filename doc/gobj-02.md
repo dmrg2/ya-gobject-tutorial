@@ -1,4 +1,4 @@
-## Create and run your first object.
+## Create and run your first object
 
 Source code for this chapter is in [/src/gobj-02/](../src/gobj-02/) directory.
 
@@ -6,8 +6,8 @@ Source code for this chapter is in [/src/gobj-02/](../src/gobj-02/) directory.
 
 In this tutorial we will use follwing names:
 
-- short module name "tut"
-- object name "obj02" (named after chapter number)
+- short module name `tut`, `Tut` and `TUT`
+- object name `obj02`, `Obj02` and `OBJ02` (named after chapter number)
 
 Conventional rules for naming objects:
 
@@ -18,7 +18,6 @@ Conventional rules for naming objects:
 ### Standard definitions
 
 To implement new object we should declare
-
 - an autoregistering macro for new type TUT_TYPE_OBJ02
 - a structure for class data
 - a structure for instance data
@@ -53,8 +52,8 @@ Macros provided in library headers do the same.
 Class structure of TutObj02 named TutObj02Class. It contains standard member 'parent_class' at 
 the very beginning. This means that any pointer to this class structure is effectively pointer
 to class structure of parent class too. The same with instance structure, having standard member
-'parent_instance'. This property of both structures defined that way is actually used by
-library.
+'parent_instance'. This property of both structures which are defined that way is actually used
+by library.
 
 <a name="memory-structure-and-init"></a>
 Consider following memory layout for simple system of objects, derived objects and "derived from
@@ -84,7 +83,7 @@ field `g_type` is automatically *replaced* by value of a derived class type.
 
 Similar, when memory structure of derived class' instance is created, library automatically
 fills the contents of a parent class' instance, embedded into derived class' instance. Parent
-class structure holds pinters to special `xxx_init ()` functions for that. Value of pointer
+class structure holds pointers to special `xxx_init ()` functions for that. Value of pointer
 to class structure `pc` is automatically changed to pointer to derived class structure.
 
 After that, library calls corresponding `xxx_init ()` functions, provided by derived class
@@ -117,7 +116,6 @@ tut_obj02_whoami (const TutObj02 *self);
 ### API implementation -- registering type
 
 All that library need to know is:
-
 - a parent class of new object
 - a size of class structure for new object class
 - a size of sigle instance of new object class
@@ -157,12 +155,15 @@ tut_obj02_get_type (void)
 }
 ```
 
-Required information passed to library in GTypeInfo structure and parent_type parameter of
-registration function. Most fields of GTypeInfo left NULL. There are good defaults for simple
-objects, such as TutObj02.
+Required information passed to library in GTypeInfo structure and first `parent_type` argument
+of registration function `g_type_register_static ()`. Most fields of GTypeInfo left NULL.
+There are good defaults for simple objects, such as TutObj02. Last argument of registration
+function contains flag value `G_TYPE_FLAG_FINAL`. For GObject library it means than type
+registered is not intended to derive other types (classes) from it. It is common practice
+to declare classes final by default until inheritance decided useful.
 
 Type identifier returned from `g_type_register_static ()` is cached in static variable inside
-our `tut_obj02_get_type ()` function and reused in next calls.
+our `tut_obj02_get_type ()` function and reused in subsequent calls.
 
 ### API implementation -- class and instance initialization
 
@@ -194,7 +195,7 @@ Provided all of the above, it is already possible to create out TutObj02, using 
     TutObj02 *instance = g_object_new(TUT_TYPE_OBJ02, NULL);
 ```
 
-But it is usual for library autor to provide library users with properly named method of creation:
+But it is usual for library author to provide library users with properly named method of creation:
 
 ```C
 TutObj02 *
@@ -242,7 +243,7 @@ main (void)
     g_print ("\tinstance_size = %u\n", tq.instance_size);
 
     /* use public interface to our object */
-    tut_obj02_whoami(obj);
+    tut_obj02_whoami (obj);
 
     /* delete our object */
     g_print ("before unref: obj->ref_count = %d\n", G_OBJECT (obj)->ref_count);
@@ -254,10 +255,11 @@ main (void)
 
 Line `obj = tut_obj02_new ();` creates new instance with reference count 1. Line
 `g_print ("G_IS_OBJECT(obj) = %d\n", G_IS_OBJECT (obj));` makes us sure that it is object indeed.
-Type query shows, that class and instance of TutObj02 is almost the same as corresponding class
+Type query shows that class and instance of TutObj02 is almost the same as corresponding class
 and instance of GObject. We haven't added anything to GObject class.
 
 The only difference in API is new application method that we can call with instance of TutObj02
-as in line `tut_obj02_whoami(obj);`.
+as in line `tut_obj02_whoami (obj);`.
 
-Destruction of object is usual, there is no need to free any resources inside of instance.
+Destruction of object is same as for GObject, there is no need to free any resources inside
+instance of our object.
