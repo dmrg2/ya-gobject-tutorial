@@ -23,7 +23,7 @@ static void tut_obj05_finalize (GObject *gobject);
 static void tut_obj05_set_property (GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
 static void tut_obj05_get_property (GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
 
-G_DEFINE_FINAL_TYPE_WITH_PRIVATE(TutObj05, tut_obj05, G_TYPE_OBJECT);
+G_DEFINE_FINAL_TYPE_WITH_PRIVATE (TutObj05, tut_obj05, G_TYPE_OBJECT);
 
 /* saved property pspecs */
 

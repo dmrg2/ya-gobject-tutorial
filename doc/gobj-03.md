@@ -229,6 +229,7 @@ of instance's private data in memory. Our custom initialization function
 
 ### Custom part of class construction
 
+<a name="object-deletion-declaration"></a>
 Our object contains data resources that should be freed on instance destruction. We define
 two function for this:
 - disposal function to "release" resources held `void tut_obj03_dispose ()`

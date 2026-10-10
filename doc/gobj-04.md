@@ -1,6 +1,6 @@
 ## Object inheritance, virtual methods, using GObject library convenience macros
 
-Source code for this chapter is in [/src/gobj-03/](../src/gobj-03/) directory.
+Source code for this chapter is in [/src/gobj-04/](../src/gobj-04/) directory.
 
 In this tutorial we wil create two objects with virtual methods `vwhoami`and `vpure`and no internal
 data. First object will be derived from GObject. It will implement method `vwhoami`, but leave
@@ -329,7 +329,7 @@ tut_obj04m_new (void) {
 ### Creating and using objects
 
 Now all is ready to use public APIs of both our objects. This is done in separate
-file [src/gobj-4/main.c](../src/gobj-4/main.c):
+file [src/gobj-04/main.c](../src/gobj-04/main.c):
 
 ```C
 #include "tut-obj04.h"
