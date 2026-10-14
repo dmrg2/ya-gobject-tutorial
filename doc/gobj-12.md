@@ -7,8 +7,8 @@ or actions like that as persistent object, which may be passed between
 different evaluation evironments without losing its behavior. Closure represent
 something *callable* that may be stored somewhere to call it later or in
 other circumstances. Closures in GObject library is not simple addresses of
-some functions. They have data assiciated with them, mechanism of notifying
-about processing of a call itsels, transformations needed to convert caller's
+some functions. They have data associated with them, mechanism of notifying
+about processing of a call itself, transformations needed to convert caller's
 data form to callee's and vice versa, and so on.
 
 [GObject's closures](https://docs.gtk.org/gobject/struct.Closure.html) used
@@ -33,7 +33,7 @@ to bind ordinary C functions to closure objects.
 
 GCClosure offers a set of ready to use marshallers to connect GObjet signals to
 handlers implemented in C, and generic marshaller, capable to process calls to
-almost any simple function given a set of its parameter descriptions.
+almost any simple function, given a set of its parameter descriptions.
 
 GCClosure instances is created similar to GObject instances. Closure instances
 are reference-counted like other objects and can notify on events of their
@@ -47,22 +47,22 @@ functions like `void (*) (void)`, functions like `char * (*) (GObject *)` and
 so on. These marshallers are relatively fast. There is also a generic
 marshaller, which is automatically used by library with closures, implementing
 delivery of different signals with variuos parameters. This generic marshaller
-can do parameter passing for GObject descendants that may define various
-signals with varuios oarameters. Generic marshaller is slower, since it has to
+can do parameter passing for GObject descendants that may define arbitrary
+signals with custom parameters. Generic marshaller is slower, since it has to
 parse and interpret parameter types. User code may implement its own marshaller
 and set up closure to use it.
 
 ### Closure notifications
 
-There are several notifications issued by closures, that user code may receive.
+There are several notifications issued by closure, that user code may receive.
 These are:
-- notificatin before marshallig arguments to called entity
+- notification before marshallig arguments to called entity
 - notification after receiving result, produced by callable entity
 - notification on data destruction, issued when call to callable entity is
 complete, and data used in that call may be freed
 - notification on invalidation of closure, acting approximately same as
 disposal for objects
-- notification on finalization of closyre, just before closure is destroyed and
+- notification on finalization of closure, just before closure is destroyed and
 memory allocated for closure is freed
 
 ### Creating and using simple closure
@@ -70,11 +70,11 @@ memory allocated for closure is freed
 Full source is in [src/gobj-12/main.c](../src/gobj-12/main.c).
 
 We will use GCClosure to call simple C function that accepts two integers and
-return sum of that integers. Our closure will use custom marshaller to convert
+returns sum of that integers. Our closure will use custom marshaller to convert
 GValue parameters to arguments of C function and to convert return value of
 C function to GValue.
 
-We will attach handlers to notifications, issued by our closure, to see how
+We will attach handlers to notifications issued by our closure to see how
 process of calling evolves.
 
 First, we declare our callable function, our marshaller, and our notification
@@ -96,7 +96,7 @@ int          func_closure_target (int a, int b); /* => a + b */
 
 Each of these functions have at least one auxillary argument that may be used
 to pass arbitrary supplemental data from user code. We use that auxillary
-argumet to pass "text labels" to closure processing stages.
+argumet to pass "text labels" for closure processing stages.
 
 Next, define variables to hold closure itself, parameters (arguments) passed to
 it, and result that it returns.
@@ -143,10 +143,10 @@ Fill in arguments to callable entity, and invoke our closure.
 Note that code block above remains the same, whether we implemented our
 summing function in C in same file, implemented it in Lua or Python module, or
 even implemented it in a web service accessed via REST-like protocol. Closure
-hides the details of implemenations, there is only contract "give two numbers,
+hides the details of implemenation, there is only contract "give two numbers,
 get a sum" remains.
 
-Now, closure object is not needed anymore. Unreference it, and get the result
+Now, closure instance is not needed anymore. Unreference it, and get the result
 of summing it returned.
 
 ```C
@@ -155,8 +155,8 @@ of summing it returned.
   g_print ("result = %d\n", g_value_get_int (&result));
 ```
 
-Program outputs the sequence of events in the process of call, up to closure
-destruction.
+Program outputs the sequence of events in the process of call execution, up to
+closure destruction.
 
 ```
 $ ./main
