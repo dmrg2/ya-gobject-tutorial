@@ -2,7 +2,7 @@
 
 Source code for this chapter is in [src/gobj-11/](../src/gobj-11/) directory.
 
-[Weak references](http://docs.gtk.org/somewhere) are used in complex object-oriented systems to simplify object
+[Weak references](https://docs.gtk.org/gobject/struct.WeakRef.html) are used in complex object-oriented systems to simplify object
 lifetime management. For example, part of a program may cache items it recently
 worked with, while allowing memory management subsystem do delete that items
 in arbitrary moments without notifying that part of a program. Or, in a doubly
