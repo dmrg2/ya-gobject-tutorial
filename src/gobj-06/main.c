@@ -30,10 +30,10 @@ main (void)
   g_print ("G_IS_OBJECT (B) = %d\n", G_IS_OBJECT (B));
   g_print
     ("=======================================================\nNotify signals:\n");
-  g_signal_connect (A, "notify::number", (GCallback) notify_A_number_cb, NULL);
-  g_signal_connect (A, "notify::text", (GCallback) notify_A_text_cb, NULL);
-  g_signal_connect (B, "notify::number", (GCallback) notify_B_number_cb, NULL);
-  g_signal_connect (B, "notify::text", (GCallback) notify_B_text_cb, NULL);
+  g_signal_connect (A, "notify::number", G_CALLBACK (notify_A_number_cb), NULL);
+  g_signal_connect (A, "notify::text", G_CALLBACK (notify_A_text_cb), NULL);
+  g_signal_connect (B, "notify::number", G_CALLBACK (notify_B_number_cb), NULL);
+  g_signal_connect (B, "notify::text", G_CALLBACK (notify_B_text_cb), NULL);
   tut_obj06_set_number (A, 1);
   tut_obj06_set_text (A, "First");
   tut_obj06_set_number (B, 2);

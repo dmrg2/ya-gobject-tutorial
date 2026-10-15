@@ -26,9 +26,10 @@ main (void)
   g_value_init (&arguments[0], G_TYPE_INT);
   g_value_init (&arguments[1], G_TYPE_INT);
 
-  C_closure = (GCClosure *) g_cclosure_new ((GCallback) func_closure_target,
+  C_closure = (GCClosure *) g_cclosure_new (G_CALLBACK (func_closure_target),
                                             "user data",
                                             on_data_destroy);
+  g_print ("C_closure->ref_count: %d\n", C_closure->closure.ref_count);
   g_closure_add_marshal_guards ((GClosure *) C_closure,
                                 "pre data", on_pre_marshal,
                                 "post data", on_post_marshal);
@@ -94,6 +95,7 @@ closure_marshaller (GClosure     *closure,
   g_print ("\tn_param_values:   %d\n", n_param_values);
   g_print ("\tinvocation_hint:  {%s}\n", (char *) invocation_hint);
   g_print ("\tmarshal_data:     {%s}\n", (char *) marshal_data);
+  g_print ("\tclosure->data:    {%s}\n", (char *) closure->data);
   C_closure = (GCClosure *) closure;
   target_func = (target_func_t) C_closure->callback;
   result = target_func (g_value_get_int (&param_values[0]),

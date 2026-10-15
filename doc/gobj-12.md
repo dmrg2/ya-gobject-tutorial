@@ -45,12 +45,15 @@ GCClosure's API has [long list](https://docs.gtk.org/gobject/struct.CClosure.htm
 of ready to use signature-specific marshallers, such as marshallers to call
 functions like `void (*) (void)`, functions like `char * (*) (GObject *)` and
 so on. These marshallers are relatively fast. There is also a generic
-marshaller, which is automatically used by library with closures, implementing
+marshaller, which is usually used by library with closures, implementing
 delivery of different signals with variuos parameters. This generic marshaller
 can do parameter passing for GObject descendants that may define arbitrary
 signals with custom parameters. Generic marshaller is slower, since it has to
-parse and interpret parameter types. User code may implement its own marshaller
-and set up closure to use it.
+parse and interpret parameter types.
+
+User code may implement its own marshaller and set up closure to use it. In
+chapter [gobj-09](gobj-09.md#implementing-property-and-signal-in-object) we
+have already done that.
 
 ### Closure notifications
 
@@ -64,6 +67,27 @@ complete, and data used in that call may be freed
 disposal for objects
 - notification on finalization of closure, just before closure is destroyed and
 memory allocated for closure is freed
+
+### Protected members of GClosure interface
+
+As stated in documetation, GClosure has only two public data memebers,
+`in_marshal` and `is_invalid`. But there are more data fields which are to be
+used by GClosure descendants and marshallers:
+- `derivative_flag`, which indicates that user is willing "standard" very
+first and very last arguments to closure target to be swapped (signal handlers
+used with GObject's signals have GObject * in the first argument and arbitrary
+gpointer as user-supplied data in the last)
+- `data` of type gpointer, which holds arbitrary user-supplied data that may
+be used, for example, in marshaller
+
+`derivative_flag` is set when `GCClosure` is created with `g_cclosure_new_swap ()`
+or `g_cclosure_new_object_swap`. There is a macro `G_CCLOSURE_SWAP_DATA` to
+test if this flag is set in closure.
+
+`data` pointer assigned from parameters of `GClosure` and `GCClosure`
+constructors. When creating closure that is by nature tightly coupled to some
+object (e.g., for object's propery change notification) with
+`g_cclosure_new_object ()`, `data` is set to point to that object.
 
 ### Creating and using simple closure
 
@@ -94,9 +118,51 @@ void         closure_marshaller  (GClosure     *closure,
 int          func_closure_target (int a, int b); /* => a + b */
 ```
 
-Each of these functions have at least one auxillary argument that may be used
-to pass arbitrary supplemental data from user code. We use that auxillary
-argumet to pass "text labels" for closure processing stages.
+Each of these functions (except our simple summing target function, of course)
+have at least one auxillary argument that may be used to pass arbitrary
+supplemental data from user code. We use that auxillary argumet to pass "text
+labels" for closure processing stages.
+
+Our notification handlers are te same, they just print its `user_data` argument.
+
+```C
+void
+on_pre_marshal (gpointer user_data, GClosure *closure)
+{
+  g_print ("in on_pre_marshal ()      {%s}\n", (char *) user_data);
+}
+```
+
+Our marshaller does not care about argument swapping at all, it just unpacks
+given arguments from passed in GValue structures and packs return value of
+target function to returned GValue.
+
+```C
+void
+closure_marshaller (GClosure     *closure,
+                    GValue       *return_value,
+                    guint         n_param_values,
+                    const GValue *param_values,
+                    gpointer      invocation_hint,
+                    gpointer      marshal_data)
+{
+  typedef int (*target_func_t) (int, int);
+  GCClosure    *C_closure;
+  target_func_t target_func;
+  int           result;
+
+  g_print ("in closure_marshaller ()\n");
+  g_print ("\tn_param_values:   %d\n", n_param_values);
+  g_print ("\tinvocation_hint:  {%s}\n", (char *) invocation_hint);
+  g_print ("\tmarshal_data:     {%s}\n", (char *) marshal_data);
+  g_print ("\tclosure->data:    {%s}\n", (char *) closure->data);
+  C_closure = (GCClosure *) closure;
+  target_func = (target_func_t) C_closure->callback;
+  result = target_func (g_value_get_int (&param_values[0]),
+                        g_value_get_int (&param_values[1]));
+  g_value_set_int (return_value, result);
+}
+```
 
 Next, define variables to hold closure itself, parameters (arguments) passed to
 it, and result that it returns.
@@ -115,7 +181,7 @@ Create closure with our target summing function, then attach notification
 handlers and our custom marshaller to it.
 
 ```C
-  C_closure = (GCClosure *) g_cclosure_new ((GCallback) func_closure_target,
+  C_closure = (GCClosure *) g_cclosure_new (G_CALLBACK (func_closure_target),
                                             "user data",
                                             on_data_destroy);
   g_closure_add_marshal_guards ((GClosure *) C_closure,
@@ -160,11 +226,13 @@ closure destruction.
 
 ```
 $ ./main
+C_closure->ref_count: 1
 in on_pre_marshal ()      {pre data}
 in closure_marshaller ()
     n_param_values:   2
     invocation_hint:  {hint}
     marshal_data:     {(null)}
+    closure->data:    {user data}
 in func_closure_target (5, 6) => 11
 in on_post_marshal ()     {post data}
 in on_closure_finalize () {fin data}
