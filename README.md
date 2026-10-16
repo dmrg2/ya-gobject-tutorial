@@ -72,6 +72,7 @@ Feel free to post an issue. If you found an error in source and have fix for it,
 10. [Using boxed types, enumeration types, flag types](doc/gobj-10.md)
 11. [Weak references](doc/gobj-11.md)
 12. [Closures](doc/gobj-12.md)
+13. [GTypeModule and dynamic loading](doc/gobj-13.md)
 
 ## Other useful information sources
 
