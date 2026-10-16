@@ -35,17 +35,20 @@ interfaces used for.
 
 Any class may implement many interfaces at once. Simple single-ancestor model
 won't fit such class relations, so classes maintain a separate *lists of
-interfaces* they want to implement. Interfaces employ simple single-ancestor
-model.
+interfaces* they want to implement. Interfaces do not have ancestors, but
+declare so called prerequisites. Prerequisites of an interface is a declaration
+of at most one instantiable class and zero or more interfaces to which the
+object implementing this specific interface must conform.
 
-Note: technically GObject library
+GObject library
 [have API](https://docs.gtk.org/gobject/type_func.TypeInterface.add_prerequisite.html)
 to *add* so called "prerequisite" to interface. This API may be used many times,
-but documentation states that prerequisite is at most one, like single ancestor.
+but documentation states that *instantiable* prerequisite (normal class) is at
+most one, like single ancestor.
 
 Any "real" class implementing some interface must implement prerequisite (or
-ancestor) of that interface (if any) too. "Default ancestor" for non-derived
-interfaces is GObject, and any class always have GObject implemented.
+"ancestor") of that interface (if any) too. "Default ancestor" for interfaces
+without prerequisites is GObject, and any class always have GObject implemented.
 
 <a name="class-iface-memory-model"></a>
 Suppose the following memory model:
@@ -71,11 +74,11 @@ that implemented by ancestor. To hide complexities of such navigation in class
 hierarchy we may implement convenient wrappers in public interface of derived
 class.
 
-Similarly, interface derived from other interface have access to structure of
-the later. Derived interface may use or (try to) change functionality of its
-base interface. Here "try to" is to state that functionality of interface is
-often implemented in "real" class, and thus have good chances to be *overriden*
-by that "real" class.
+Similarly, interface having prerequisite of other interface have access to
+structure of the later. Derived interface may use or (try to) change
+functionality of its prerequisite interface. Here "try to" is to state that
+functionality of interface is often implemented in "real" class, and thus have
+good chances to be *overriden* by that "real" class.
 
 ### INamed interface declaration
 
