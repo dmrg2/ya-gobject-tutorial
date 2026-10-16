@@ -12,7 +12,7 @@ tut_iknown_default_init (TutIKnownInterface *iface)
   g_object_interface_install_property (
     iface,
     g_param_spec_int ("id", "Id", "This entity id.",
-                      G_MININT32, G_MAXINT32, 0,
+                      G_MININT, G_MAXINT, 0,
                       G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE |
                           G_PARAM_STATIC_STRINGS));
   iface->vid = NULL;            /* pure virtual */

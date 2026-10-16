@@ -48,8 +48,8 @@ tut_obj06_class_init (TutObj06Class *klass)
     g_param_spec_int ("number",
                       "Number",
                       "Property holding arbitrary signed integer.",
-                      G_MININT32,
-                      G_MAXINT32,
+                      G_MININT,
+                      G_MAXINT,
                       0, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
   tut_obj06_prop_pspec[PROP_TEXT] =
     g_param_spec_string ("text",
