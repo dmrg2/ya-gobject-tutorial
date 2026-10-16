@@ -89,9 +89,13 @@ and [src/gobj-13/tut-module-greeter-alt.h](../src/gobj-13/tut-module-greeter-alt
 
 Note: there may be different custom conventions on naming and structure of API,
 that is used with shared library based plugins. All that is needed is to create
-GTypeObject, make its `load` called and then create objects of classes, defined
-in plugin.  We simply made it similar to GObject naming scheme here. As complex
-example you may use [GTK3 input methods](https://gitlab.gnome.org/GNOME/gtk/-/blob/3.24.52/gtk/gtkimmodule.c).
+GTypeModule, make its `load` called and then create objects of classes, defined
+in plugin.  We simply made it similar to GObject naming scheme here.
+
+As complex example you may use [GTK3 input methods](https://gitlab.gnome.org/GNOME/gtk/-/blob/3.24.52/gtk/gtkimmodule.c).
+There is also [Gio.IOModule](https://docs.gtk.org/gio/class.IOModule.html)
+which further extends GTypeModule and automates loading dynamic libraries from
+files.
 
 ### Declarations in type plugin
 
