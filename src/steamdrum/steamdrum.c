@@ -612,6 +612,15 @@ static void __parseiface_imp (FILE *fout, const char *basename, const iface_info
                 fprintf (fout, "  iface->%s = NULL;\n", ii->virtuals[i].name);
         }
     }
+    if (ii->n_prereqs) {
+        for (i = 0; i < ii->n_prereqs; i++) {
+            const char *itype = to_macro_type (ii->prereqs[i]);
+            if (itype) {
+                fprintf (fout, "  g_type_interface_add_prerequisite (%s, %s);\n", ii->macrotype, itype);
+                free ((void *) itype);
+            }
+        }
+    }
     fprintf (fout, "  /* XXX %s::default_init() */\n", ii->ifacename);
     fprintf (fout, "}\n\n");
 
