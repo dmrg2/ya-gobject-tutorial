@@ -240,8 +240,8 @@ Property "id" is declared as construct-only:
         g_param_spec_int ("id",
                           "Id",
                           "This entity id.",
-                          G_MININT32,
-                          G_MAXINT32,
+                          G_MININT,
+                          G_MAXINT,
                           0,
                           G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE |
                               G_PARAM_STATIC_STRINGS));
