@@ -1106,6 +1106,7 @@ static void clear_ifaceinfo (iface_info_t *ii) {
             if (ii->virtuals[i].name != NULL) free (ii->virtuals[i].name);
             if (ii->virtuals[i].type != NULL) free (ii->virtuals[i].type);
             if (ii->virtuals[i].arg != NULL) free (ii->virtuals[i].arg);
+            if (ii->virtuals[i].argnames != NULL) free (ii->virtuals[i].argnames);
         }
         free (ii->virtuals);
     }
@@ -1154,6 +1155,7 @@ static void clear_classinfo (class_info_t *ci) {
             if (ci->methods[i].name != NULL) free (ci->methods[i].name);
             if (ci->methods[i].type != NULL) free (ci->methods[i].type);
             if (ci->methods[i].arg != NULL) free (ci->methods[i].arg);
+            if (ci->methods[i].argnames != NULL) free (ci->methods[i].argnames);
         }
         free (ci->methods);
     }
@@ -1162,6 +1164,7 @@ static void clear_classinfo (class_info_t *ci) {
             if (ci->virtuals[i].name != NULL) free (ci->virtuals[i].name);
             if (ci->virtuals[i].type != NULL) free (ci->virtuals[i].type);
             if (ci->virtuals[i].arg != NULL) free (ci->virtuals[i].arg);
+            if (ci->virtuals[i].argnames != NULL) free (ci->virtuals[i].argnames);
         }
         free (ci->virtuals);
     }
