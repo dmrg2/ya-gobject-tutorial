@@ -17,6 +17,7 @@ typedef struct _method_info {
     char       *name;
     char       *type;
     char       *arg;
+    char       *argnames;
     int         null;
 } method_info_t;
 
@@ -76,6 +77,7 @@ static int     init_ifaceinfo (iface_info_t *ii, char *ifacename);
 static void    clear_ifaceinfo (iface_info_t *ii);
 static int     init_classinfo (class_info_t *ci, char *classname);
 static void    clear_classinfo (class_info_t *ci);
+static char   *args_to_argnames (const char * args);
 static int     parseifaces (char *filename);
 static int     parseclasses (char *filename);
 static int     parseclass (config_setting_t *class);
@@ -283,6 +285,7 @@ static int parseiface (config_setting_t *iface) {
             ii.virtuals[ii.n_virtuals].name = strdup (mname);
             ii.virtuals[ii.n_virtuals].type = strdup (mtype);
             ii.virtuals[ii.n_virtuals].arg = strdup (marg);
+            ii.virtuals[ii.n_virtuals].argnames = args_to_argnames (marg);
             ii.virtuals[ii.n_virtuals].null = (strcmp (mnull, "NULL") == 0);
             ii.n_virtuals++;
         }
@@ -456,7 +459,8 @@ static int parseclass (config_setting_t *class) {
             ci.virtuals[ci.n_virtuals].name = strdup (mname);
             ci.virtuals[ci.n_virtuals].type = strdup (mtype);
             ci.virtuals[ci.n_virtuals].arg = strdup (marg);
-            ci.virtuals[ci.n_virtuals].null = (strcmp (mnull, "NULL") == 0);
+            ci.virtuals[ci.n_virtuals].argnames = args_to_argnames (marg);
+            ci.virtuals[ci.n_virtuals].null = (strcmp (mnull, "IMPL") == 0);
             ci.n_virtuals++;
         }
     }
@@ -642,7 +646,7 @@ static void __parseiface_imp (FILE *fout, const char *basename, const iface_info
     }
     fprintf (fout, "\n");
 
-    /* public interface */
+    /* public interface to virtuals */
     if (ii->n_virtuals) {
         for (i = 0; i < ii->n_virtuals; i++) {
             fprintf (fout, "\n");
@@ -657,14 +661,24 @@ static void __parseiface_imp (FILE *fout, const char *basename, const iface_info
                 fprintf (fout, "  g_return_val_if_fail (%s_IS_%s (self), (%s) 0);\n", ii->m_module, ii->m_type, ii->virtuals[i].type);
                 fprintf (fout, "  iface = %s_GET_IFACE (self);\n", ii->macroname);
                 fprintf (fout, "  g_return_val_if_fail (iface->%s != NULL, (%s) 0);\n", ii->virtuals[i].name, ii->virtuals[i].type);
-                fprintf (fout, "  /* XXX iface->%s ();*/;\n", ii->virtuals[i].name);
+                if (ii->virtuals[i].argnames) {
+                    fprintf (fout, "  res = iface->%s (self, %s);\n", ii->virtuals[i].name, ii->virtuals[i].argnames);
+                } else {
+                    fprintf (fout, "  res = iface->%s (self);\n", ii->virtuals[i].name);
+                }
+                fprintf (fout, "  /* XXX virtual %s::%s();*/;\n", ii->ifacename, ii->virtuals[i].name);
                 fprintf (fout, "  return res;\n");
             } else {
                 fprintf (fout, "\n");
-                fprintf (fout, "  g_return_val_if_fail (%s_IS_%s (self), (%s) 0);\n", ii->m_module, ii->m_type, ii->virtuals[i].type);
+                fprintf (fout, "  g_return_if_fail (%s_IS_%s (self));\n", ii->m_module, ii->m_type);
                 fprintf (fout, "  iface = %s_GET_IFACE (self);\n", ii->macroname);
-                fprintf (fout, "  g_return_val_if_fail (iface->%s != NULL, (%s) 0);\n", ii->virtuals[i].name, ii->virtuals[i].type);
-                fprintf (fout, "  /* XXX iface->%s ();*/;\n", ii->virtuals[i].name);
+                fprintf (fout, "  g_return_if_fail (iface->%s != NULL);\n", ii->virtuals[i].name);
+                if (ii->virtuals[i].argnames) {
+                    fprintf (fout, "  iface->%s (self, %s);\n", ii->virtuals[i].name, ii->virtuals[i].argnames);
+                } else {
+                    fprintf (fout, "  iface->%s (self);\n", ii->virtuals[i].name);
+                }
+                fprintf (fout, "  /* XXX virtual %s::%s();*/;\n", ii->ifacename, ii->virtuals[i].name);
             }
             fprintf (fout, "}\n");
         }
@@ -1009,6 +1023,44 @@ static void __parseclass_imp (FILE *fout, const char *basename, const class_info
             fprintf (fout, "}\n");
         }
     }
+
+    /* public interface to virtuals */
+    if (ci->n_virtuals) {
+        for (i = 0; i < ci->n_virtuals; i++) {
+            fprintf (fout, "\n");
+            if (strcmp (ci->virtuals[i].arg, "void") == 0)
+                fprintf (fout, "%s\n%s_%s (%s *self)\n", ci->virtuals[i].type, ci->snakename, ci->virtuals[i].name, ci->classname);
+            else
+                fprintf (fout, "%s\n%s_%s (%s *self, %s)\n", ci->virtuals[i].type, ci->snakename, ci->virtuals[i].name, ci->classname, ci->virtuals[i].arg);
+            fprintf (fout, "{\n");
+            fprintf (fout, "  %sClass *class;\n", ci->classname);
+            if (strcmp (ci->virtuals[i].type, "void") != 0) {
+                fprintf (fout, "  %s res;\n\n", ci->virtuals[i].type);
+                fprintf (fout, "  g_return_val_if_fail (%s_IS_%s (self), (%s) 0);\n", ci->m_module, ci->m_type, ci->virtuals[i].type);
+                fprintf (fout, "  class = %s_GET_CLASS (self);\n", ci->macroname);
+                fprintf (fout, "  g_return_val_if_fail (class->%s != NULL, (%s) 0);\n", ci->virtuals[i].name, ci->virtuals[i].type);
+                if (ci->virtuals[i].argnames) {
+                    fprintf (fout, "  res = class->%s (self, %s);\n", ci->virtuals[i].name, ci->virtuals[i].argnames);
+                } else {
+                    fprintf (fout, "  res = class->%s (self);\n", ci->virtuals[i].name);
+                }
+                fprintf (fout, "  /* XXX virtual %s::%s();*/;\n", ci->classname, ci->virtuals[i].name);
+                fprintf (fout, "  return res;\n");
+            } else {
+                fprintf (fout, "\n");
+                fprintf (fout, "  g_return_if_fail (%s_IS_%s (self));\n", ci->m_module, ci->m_type);
+                fprintf (fout, "  class = %s_GET_CLASS (self);\n", ci->macroname);
+                fprintf (fout, "  g_return_if_fail (class->%s != NULL);\n", ci->virtuals[i].name);
+                if (ci->virtuals[i].argnames) {
+                    fprintf (fout, "  class->%s (self, %s);\n", ci->virtuals[i].name, ci->virtuals[i].argnames);
+                } else {
+                    fprintf (fout, "  class->%s (self);\n", ci->virtuals[i].name);
+                }
+                fprintf (fout, "  /* XXX virtual %s::%s();*/;\n", ci->classname, ci->virtuals[i].name);
+            }
+            fprintf (fout, "}\n");
+        }
+    }
 }
 
 static int init_ifaceinfo (iface_info_t *ii, char *ifacename) {
@@ -1113,4 +1165,34 @@ static void clear_classinfo (class_info_t *ci) {
         }
         free (ci->virtuals);
     }
+}
+
+static char * args_to_argnames (const char * args) {
+    char *tmp = (char *)args, *tok;
+    char *res;
+
+    if (!args) return NULL;
+    if (!*args) return NULL;
+    if (strcmp (args, "void") == 0) return NULL;
+    tmp = strdup (args);
+    res = calloc (1, strlen (args) + 1);
+    tok = strtok (tmp, ",");
+    while (tok) {
+        char * lastspace = strrchr (tok, ' ');
+        char * pname;
+        if (!lastspace)
+            pname = "__parse_failed_param";
+        else
+            pname = lastspace + 1;
+        if (!*res) {
+            strcat (res, pname);
+        } else {
+            strcat (res, ", ");
+            strcat (res, pname);
+        }
+        tok = strtok (NULL, ",");
+    }
+    free ((void *)tmp);
+    if (!*res) { free ((void *) res); res = NULL; }
+    return res;
 }
