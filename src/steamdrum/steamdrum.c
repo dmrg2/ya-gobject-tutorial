@@ -5,13 +5,13 @@
 #include <getopt.h>
 #include "nameutils.h"
 
-#define BAIL(...) do { fprintf (stderr, __VA_ARGS__); } while (0)
-#define BAILC(__code, ...) do { { __code; } fprintf (stderr, __VA_ARGS__); } while (0)
-#define BAILCT(__code, ...) do { fprintf (stderr, __VA_ARGS__); { __code; } } while (0)
-#define BAILR(...) do { fprintf (stderr, __VA_ARGS__); return } while (0)
-#define BAILRC(__code, ...) do { { __code; } fprintf (stderr, __VA_ARGS__); return } while (0)
-#define BAILR0(...) do { fprintf (stderr ,__VA_ARGS__); return 0; } while (0)
-#define BAILR0C(__code, ...) do { { __code; } fprintf (stderr ,__VA_ARGS__); return 0; } while (0)
+#define BAIL(...) ({ fprintf (stderr, __VA_ARGS__); })
+#define BAILC(__code, ...) ({ { __code; } fprintf (stderr, __VA_ARGS__); })
+#define BAILCT(__code, ...) ({ fprintf (stderr, __VA_ARGS__); { __code; } })
+#define BAILR(...) ({ fprintf (stderr, __VA_ARGS__); return; })
+#define BAILRC(__code, ...) ({ { __code; } fprintf (stderr, __VA_ARGS__); return; })
+#define BAILR0(...) ({ fprintf (stderr ,__VA_ARGS__); return 0; })
+#define BAILR0C(__code, ...) ({ { __code; } fprintf (stderr ,__VA_ARGS__); return 0; })
 
 typedef struct _method_info {
     char       *name;
@@ -266,20 +266,20 @@ static int parseiface (config_setting_t *iface) {
             config_setting_t *method = config_setting_get_elem (virtuals, i);
             if (!method) BAILCT (continue, "config error on %s.virtuals[%d]\n", config_setting_name (iface), i);
             mname = config_setting_name (method);
-            if (!is_valid_mname (mname)) BAILCT (continue, "%s.virtuals[%d] name is not valid method name\n", config_setting_name (iface), i);
-            if (!config_setting_is_array (method)) BAILCT (continue, "%s.virtuals[%d] must contain array [\"<type>\", \"<args>\"{, \"NULL\"}]\n", config_setting_name (iface), i);
-            if (config_setting_length (method) < 2) BAILCT (continue, "%s.virtuals[%d] array length too small\n", config_setting_name (iface), i);
-            if (config_setting_type (config_setting_get_elem (method, 0)) != CONFIG_TYPE_STRING) BAILR0 ("%s.virtuals[%d] array must contain strings\n", config_setting_name (iface), i);
+            if (!is_valid_mname (mname)) BAILCT (continue, "%s.virtuals.'%s' is not valid method name\n", config_setting_name (iface), mname);
+            if (!config_setting_is_array (method)) BAILCT (continue, "%s.virtuals.%s must contain array [\"<type>\", \"<args>\"{, \"NULL\"}]\n", config_setting_name (iface), mname);
+            if (config_setting_length (method) < 2) BAILCT (continue, "%s.virtuals.%s array length too small\n", config_setting_name (iface), mname);
+            if (config_setting_type (config_setting_get_elem (method, 0)) != CONFIG_TYPE_STRING) BAILR0 ("%s.virtuals.%s array must contain strings\n", config_setting_name (iface), mname);
             mtype = config_setting_get_string_elem (method, 0);
-            if (!mtype) BAILCT (continue, "%s.virtuals[%d] type is NULL\n", config_setting_name (iface), i);
+            if (!mtype) BAILCT (continue, "%s.virtuals.%s type is NULL\n", config_setting_name (iface), mname);
             if (!*mtype) mtype = "void";
             marg = config_setting_get_string_elem (method, 1);
-            if (!marg) BAILCT (continue, "%s.virtuals[%d] arg is NULL\n", config_setting_name (iface), i);
+            if (!marg) BAILCT (continue, "%s.virtuals.%s arg is NULL\n", config_setting_name (iface), mname);
             if (!*marg) marg = "void";
             if (config_setting_length (method) > 2) {
                 mnull = config_setting_get_string_elem (method, 2);
-                if (!mnull) BAILCT (continue, "%s.virtuals[%d] pure flag is NULL\n", config_setting_name (iface), i);
-                if (!*mnull) BAILCT (continue, "%s.virtuals[%d] pure flag is empty\n", config_setting_name (iface), i);
+                if (!mnull) BAILCT (continue, "%s.virtuals.%s pure flag is NULL\n", config_setting_name (iface), mname);
+                if (!*mnull) BAILCT (continue, "%s.virtuals.%s pure flag is empty\n", config_setting_name (iface), mname);
             } else
                 mnull = "NULL";
             ii.virtuals[ii.n_virtuals].name = strdup (mname);
@@ -440,27 +440,27 @@ static int parseclass (config_setting_t *class) {
             config_setting_t *method = config_setting_get_elem (virtuals, i);
             if (!method) BAILCT (continue, "config error on %s.virtuals[%d]\n", config_setting_name (class), i);
             mname = config_setting_name (method);
-            if (!is_valid_mname (mname)) BAILCT (continue, "%s.virtuals[%d] name is not valid method name\n", config_setting_name (class), i);
-            if (!config_setting_is_array (method)) BAILCT (continue, "%s.virtuals[%d] must contain array [\"<type>\", \"<args>\"{, \"NULL\"}]\n", config_setting_name (class), i);
-            if (config_setting_length (method) < 2) BAILCT (continue, "%s.virtuals[%d] array length too small\n", config_setting_name (class), i);
-            if (config_setting_type (config_setting_get_elem (method, 0)) != CONFIG_TYPE_STRING) BAILR0 ("%s.virtuals[%d] array must contain strings\n", config_setting_name (class), i);
+            if (!is_valid_mname (mname)) BAILCT (continue, "%s.virtuals.'%s' is not valid method name\n", config_setting_name (class), mname);
+            if (!config_setting_is_array (method)) BAILCT (continue, "%s.virtuals.%s must contain array [\"<type>\", \"<args>\"{, \"NULL\"}]\n", config_setting_name (class), mname);
+            if (config_setting_length (method) < 2) BAILCT (continue, "%s.virtuals.%s array length too small\n", config_setting_name (class), mname);
+            if (config_setting_type (config_setting_get_elem (method, 0)) != CONFIG_TYPE_STRING) BAILR0 ("%s.virtuals.%s array must contain strings\n", config_setting_name (class), mname);
             mtype = config_setting_get_string_elem (method, 0);
-            if (!mtype) BAILCT (continue, "%s.virtuals[%d] type is NULL\n", config_setting_name (class), i);
+            if (!mtype) BAILCT (continue, "%s.virtuals.%s type is NULL\n", config_setting_name (class), mname);
             if (!*mtype) mtype = "void";
             marg = config_setting_get_string_elem (method, 1);
-            if (!marg) BAILCT (continue, "%s.virtuals[%d] arg is NULL\n", config_setting_name (class), i);
+            if (!marg) BAILCT (continue, "%s.virtuals.%s arg is NULL\n", config_setting_name (class), mname);
             if (!*marg) marg = "void";
             if (config_setting_length (method) > 2) {
                 mnull = config_setting_get_string_elem (method, 2);
-                if (!mnull) BAILCT (continue, "%s.virtuals[%d] pure flag is NULL\n", config_setting_name (class), i);
-                if (!*mnull) BAILCT (continue, "%s.virtuals[%d] pure flag is empty\n", config_setting_name (class), i);
+                if (!mnull) BAILCT (continue, "%s.virtuals.%s pure flag is NULL\n", config_setting_name (class), mname);
+                if (!*mnull) BAILCT (continue, "%s.virtuals.%s pure flag is empty\n", config_setting_name (class), mname);
             } else
-                mnull = "NULL";
+                mnull = "IMPL";
             ci.virtuals[ci.n_virtuals].name = strdup (mname);
             ci.virtuals[ci.n_virtuals].type = strdup (mtype);
             ci.virtuals[ci.n_virtuals].arg = strdup (marg);
             ci.virtuals[ci.n_virtuals].argnames = args_to_argnames (marg);
-            ci.virtuals[ci.n_virtuals].null = (strcmp (mnull, "IMPL") == 0);
+            ci.virtuals[ci.n_virtuals].null = (strcmp (mnull, "NULL") == 0);
             ci.n_virtuals++;
         }
     }
@@ -1182,11 +1182,13 @@ static char * args_to_argnames (const char * args) {
     tok = strtok (tmp, ",");
     while (tok) {
         char * lastspace = strrchr (tok, ' ');
-        char * pname;
-        if (!lastspace)
-            pname = "__parse_failed_param";
+        char * altspace = strrchr (tok, '*');
+        char * pname = NULL;
+        if (!lastspace || (lastspace < altspace))
+            pname = altspace + 1;
         else
             pname = lastspace + 1;
+        if (!pname) pname = "__parse_failed_param";
         if (!*res) {
             strcat (res, pname);
         } else {
